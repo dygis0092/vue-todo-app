@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Todo</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Todo App</h1>
+        <input type="text" v-model="inputText" v-on:keyup.enter="addItem"> <!-- v-on:keyup.enter="" enter를 눌렀을 때 활성화 되도록-->
+        <button v-on:click="fetchItems">add</button>
+
+        <!-- 저장된 배열이 리스트로 보여지도록 -->
+        <div>
+            {{ todoItems }}
+            <ul>
+               <li v-for="(todoItem, index) in todoItems">
+                   {{ todoItem }}
+                   <button v-on:click="removeItem(todoItem, index)">remove</button>
+               </li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                inputText: '',
+                todoItems: []
+            },
+            methods: {
+                addItem: function(){
+                    // console.log('add');
+                    var value = this.inputText;
+                    localStorage.setItem(value, value); //저장소에 key, value 저장
+                    this.inputText = ''; // 저장 후 input을 빈 칸으로 만들기
+                    this.todoItems.push(value); // 입력 후 바로 li가 나오도록 push
+                },
+                fetchItems: function(){
+                    // axios.get('/vue-todo-app')
+                    for (var i = 0; i < localStorage.length; i++) {
+                        var value = localStorage.key(i);
+                        // console.log(value);
+                        // console.log(this);
+                        this.todoItems.push(value);
+                    }
+                },
+                removeItem: function(todoItem, index){
+                    // axios.delete('/vue-todo-app' + index)
+                    console.log(todoItem, index);
+                    this.todoItems.splice(index, 1);
+                    localStorage.removeItem(todoItem);
+                },
+            },
+            created: function(){ // 라이프사이클 다이어그램. 버튼을 누르기전에 화면이 뜰 때 실행
+                this.fetchItems();
+            },
+            
+        });
+    </script>
+    
+</body>
+</html>
